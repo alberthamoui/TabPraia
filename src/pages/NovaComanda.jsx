@@ -16,6 +16,21 @@ export default function NovaComanda() {
     if (!nomeTrim) { show('Informe o nome do cliente', 'erro'); return }
 
     setLoading(true)
+
+    // Verifica licença antes de criar
+    const statusLicenca = await window.api['licenca_status']()
+    if (!statusLicenca.ok || !statusLicenca.data?.ativo) {
+      show('Licença inativa. Acesse Configurações para reativar.', 'erro')
+      setLoading(false)
+      return
+    }
+    const lic = statusLicenca.data.licenca
+    if (lic?.tipo === 'mensal' && lic?.expira_em && new Date(lic.expira_em) <= new Date()) {
+      show('Assinatura mensal expirada. Renove para continuar.', 'erro')
+      setLoading(false)
+      return
+    }
+
     const existe = await window.api['comandas_clienteTemAberta']({ nome_cliente: nomeTrim })
     if (existe.ok && existe.data) {
       show('Este cliente já tem uma comanda aberta', 'erro')

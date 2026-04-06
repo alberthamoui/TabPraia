@@ -4,12 +4,71 @@ import { Link } from 'react-router-dom'
 const fmt = (v) =>
   'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
 
+function StatusLicenca({ licenca }) {
+  if (!licenca) return null
+
+  if (licenca.tipo === 'permanente') {
+    return (
+      <div className="licenca-status licenca-ok">
+        <span className="licenca-icone">✓</span>
+        <span>Licença permanente ativa</span>
+      </div>
+    )
+  }
+
+  // Mensal
+  const agora = new Date()
+  const expira = licenca.expira_em ? new Date(licenca.expira_em) : null
+
+  if (!expira) return null
+
+  const diffMs = expira - agora
+  const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  const expirou = diasRestantes <= 0
+
+  // Barra de progresso: janela de 30 dias
+  const totalDias = 30
+  const progresso = expirou ? 0 : Math.min(100, Math.round((diasRestantes / totalDias) * 100))
+
+  const cor = expirou ? 'vermelho' : diasRestantes <= 5 ? 'amarelo' : 'verde'
+
+  return (
+    <div className={`licenca-status licenca-mensal licenca-${cor}`}>
+      <div className="licenca-mensal-header">
+        <span className="licenca-icone">{expirou ? '⚠️' : '📅'}</span>
+        <span className="licenca-mensal-texto">
+          {expirou
+            ? 'Assinatura expirada — renove para continuar'
+            : diasRestantes === 1
+            ? 'Assinatura vence amanhã'
+            : `Assinatura mensal — ${diasRestantes} dias restantes`}
+        </span>
+      </div>
+      <div className="licenca-barra-fundo">
+        <div
+          className={`licenca-barra-progresso licenca-barra-${cor}`}
+          style={{ width: `${progresso}%` }}
+        />
+      </div>
+      {!expirou && (
+        <span className="licenca-expira-em">
+          Vence em {expira.toLocaleDateString('pt-BR')}
+        </span>
+      )}
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const [dados, setDados] = useState(null)
+  const [licenca, setLicenca] = useState(null)
 
   useEffect(() => {
     window.api['comandas_indicadoresDashboard']().then((res) => {
       if (res.ok) setDados(res.data)
+    })
+    window.api['licenca_status']().then((res) => {
+      if (res.ok) setLicenca(res.data?.licenca)
     })
   }, [])
 
@@ -49,6 +108,8 @@ export default function Dashboard() {
           Configurações
         </Link>
       </div>
+
+      <StatusLicenca licenca={licenca} />
 
       <p className="section-title">Indicadores de hoje</p>
       <div className="indicadores">

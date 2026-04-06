@@ -432,6 +432,69 @@ tr:hover td { background: #f8fafc; }
 .chave-status.valido { background: #e8f5e9; color: var(--verde); }
 .chave-status.invalido { background: #ffebee; color: var(--vermelho); }
 
+/* Status de licença no Dashboard */
+.licenca-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1.5px solid;
+}
+
+.licenca-ok {
+  background: #e8f5e9;
+  border-color: #a5d6a7;
+  color: var(--verde);
+}
+
+.licenca-icone { font-size: 1.1rem; }
+
+.licenca-mensal {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.licenca-mensal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.licenca-mensal-texto { flex: 1; }
+
+.licenca-verde { background: #e8f5e9; border-color: #a5d6a7; color: #1b5e20; }
+.licenca-amarelo { background: #fff8e1; border-color: #ffe082; color: #6d4c00; }
+.licenca-vermelho { background: #ffebee; border-color: #ef9a9a; color: var(--vermelho); }
+
+.licenca-barra-fundo {
+  height: 7px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.licenca-barra-progresso {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.licenca-barra-verde { background: var(--verde); }
+.licenca-barra-amarelo { background: var(--amarelo); }
+.licenca-barra-vermelho { background: var(--vermelho); }
+
+.licenca-expira-em {
+  font-size: 0.78rem;
+  font-weight: 400;
+  opacity: 0.75;
+  text-align: right;
+}
+
 /* Verificando licença (splash mínimo) */
 .verificando-licenca {
   display: flex;
