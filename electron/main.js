@@ -54,33 +54,26 @@ async function verificarLicenca() {
     return
   }
 
-  // Licença mensal vencida: precisa validar online obrigatoriamente
-  const mensalExpirado =
-    dados.tipo === 'mensal' &&
-    dados.expira_em &&
-    new Date(dados.expira_em) <= new Date()
-
-  if (!mensalExpirado && licenca.licencaValida(dados)) {
-    // Dentro da janela de 30 dias — não precisa de rede
-    appState.ativo = true
-    appState.licenca = dados
-    return
-  }
-
-  // Precisa revalidar online
+  // Sempre tenta validar online primeiro — permite revogação imediata.
+  // Só usa o cache local se não houver conexão com o servidor.
   try {
     const resultado = await licenca.validarOnline(dados.chave)
     if (resultado.ok) {
       appState.ativo = true
-      appState.licenca = licenca.lerLicenca() // já foi salvo por validarOnline
+      appState.licenca = licenca.lerLicenca() // já atualizado por validarOnline
     } else {
-      // Licença inválida/revogada
+      // Licença revogada, expirada ou inválida no servidor
       licenca.deletarLicenca()
       appState.ativo = false
     }
   } catch {
-    // Falha de rede — aplica grace period
-    if (licenca.emGracePeriod(dados)) {
+    // Falha de rede — usa cache local dentro do grace period
+    const mensalExpirado =
+      dados.tipo === 'mensal' &&
+      dados.expira_em &&
+      new Date(dados.expira_em) <= new Date()
+
+    if (!mensalExpirado && (licenca.licencaValida(dados) || licenca.emGracePeriod(dados))) {
       appState.ativo = true
       appState.licenca = dados
     } else {
