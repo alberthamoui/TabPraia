@@ -1,11 +1,17 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 const channels = [
+  // Licença
+  'licenca:status',
+  'licenca:ativar',
+  'licenca:validar',
+  // Produtos
   'produtos:listar',
   'produtos:listarAtivos',
   'produtos:criar',
   'produtos:editar',
   'produtos:toggleAtivo',
+  // Comandas
   'comandas:listarAbertas',
   'comandas:listarFechadas',
   'comandas:buscarPorId',
@@ -16,10 +22,12 @@ const channels = [
   'comandas:indicadoresDashboard',
   'comandas:produtosMaisVendidosDia',
   'comandas:deletar',
+  // Itens
   'itens:listarPorComanda',
   'itens:adicionar',
   'itens:atualizarQuantidade',
   'itens:remover',
+  // PIX
   'pix:salvarConfig',
   'pix:obterConfig',
   'pix:gerarQR',

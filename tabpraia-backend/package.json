@@ -1,0 +1,9 @@
+{
+  "name": "tabpraia-backend",
+  "version": "1.0.0",
+  "description": "Backend de licenciamento do TabPraia (Vercel Functions + Supabase)",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4"
+  }
+}
