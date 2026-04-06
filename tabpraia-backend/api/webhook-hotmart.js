@@ -11,7 +11,8 @@ const SECURITY_HEADERS = {
 }
 
 function responder(res, status, body) {
-  res.status(status).set(SECURITY_HEADERS).json(body)
+  res.writeHead(status, SECURITY_HEADERS)
+  res.end(JSON.stringify(body))
 }
 
 /**
