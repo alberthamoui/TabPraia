@@ -16,7 +16,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    title: 'Barraca do João',
+    title: 'Barraca',
     autoHideMenuBar: true,
   })
 

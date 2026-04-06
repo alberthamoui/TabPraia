@@ -1,4 +1,4 @@
-# Barraca do João — Controle de Comandas
+# Barraca — Controle de Comandas
 
 App desktop para Windows de controle de comandas de barraca de praia. Funciona 100% offline com banco SQLite local.
 

@@ -141,7 +141,7 @@ export default function Configuracoes() {
             <label>Nome do estabelecimento *</label>
             <input
               type="text"
-              placeholder="Ex: Barraca do Joao"
+              placeholder="Ex: Barraca"
               maxLength={25}
               value={form.nome}
               onChange={(e) => set('nome', e.target.value)}

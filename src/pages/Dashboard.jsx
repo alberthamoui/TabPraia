@@ -16,7 +16,7 @@ export default function Dashboard() {
   return (
     <div className="page">
       <div className="page-header">
-        <h1>🏖️ Barraca do João</h1>
+        <h1>🏖️ Barraca</h1>
       </div>
 
       <div className="dashboard-grid">

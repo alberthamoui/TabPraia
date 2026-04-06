@@ -1,7 +1,7 @@
 {
   "name": "praieiro",
   "version": "1.0.0",
-  "description": "Controle de comandas — Barraca do João",
+  "description": "Controle de comandas — Barraca",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.praieiro.app",
-    "productName": "Barraca do João",
+    "productName": "Barraca",
     "win": {
       "target": "nsis",
       "icon": "public/icon.ico"
