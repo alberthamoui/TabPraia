@@ -1,0 +1,52 @@
+{
+  "name": "praieiro",
+  "version": "1.0.0",
+  "description": "Controle de comandas — Barraca do João",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "build": "vite build",
+    "dist": "vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "build": {
+    "appId": "com.praieiro.app",
+    "productName": "Barraca do João",
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "electron/db",
+        "to": "db"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.5.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "electron-rebuild": "^3.2.9",
+    "vite": "^5.1.4",
+    "wait-on": "^7.2.0"
+  }
+}
