@@ -9,52 +9,47 @@ function StatusLicenca({ licenca }) {
 
   if (licenca.tipo === 'permanente') {
     return (
-      <div className="licenca-status licenca-ok">
-        <span className="licenca-icone">✓</span>
-        <span>Licença permanente ativa</span>
+      <div className="licenca-pill licenca-pill-verde" title="Licença permanente ativa">
+        ✓ Permanente
       </div>
     )
   }
 
-  // Mensal
-  const agora = new Date()
+  // Mensal sem data de vencimento definida
   const expira = licenca.expira_em ? new Date(licenca.expira_em) : null
+  if (!expira) {
+    return (
+      <div className="licenca-pill licenca-pill-verde" title="Assinatura mensal ativa">
+        ✓ Mensal ativa
+      </div>
+    )
+  }
 
-  if (!expira) return null
-
-  const diffMs = expira - agora
-  const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  const agora = new Date()
+  const diasRestantes = Math.ceil((expira - agora) / (1000 * 60 * 60 * 24))
   const expirou = diasRestantes <= 0
-
-  // Barra de progresso: janela de 30 dias
-  const totalDias = 30
-  const progresso = expirou ? 0 : Math.min(100, Math.round((diasRestantes / totalDias) * 100))
-
+  const progresso = expirou ? 0 : Math.min(100, Math.round((diasRestantes / 30) * 100))
   const cor = expirou ? 'vermelho' : diasRestantes <= 5 ? 'amarelo' : 'verde'
 
+  const label = expirou
+    ? '⚠️ Assinatura expirada'
+    : diasRestantes === 1
+    ? '📅 Vence amanhã'
+    : `📅 ${diasRestantes} dias`
+
+  const titulo = expirou
+    ? 'Assinatura expirada — renove para continuar'
+    : `Vence em ${expira.toLocaleDateString('pt-BR')}`
+
   return (
-    <div className={`licenca-status licenca-mensal licenca-${cor}`}>
-      <div className="licenca-mensal-header">
-        <span className="licenca-icone">{expirou ? '⚠️' : '📅'}</span>
-        <span className="licenca-mensal-texto">
-          {expirou
-            ? 'Assinatura expirada — renove para continuar'
-            : diasRestantes === 1
-            ? 'Assinatura vence amanhã'
-            : `Assinatura mensal — ${diasRestantes} dias restantes`}
-        </span>
-      </div>
-      <div className="licenca-barra-fundo">
+    <div className={`licenca-pill licenca-pill-${cor}`} title={titulo}>
+      <span>{label}</span>
+      <div className="licenca-pill-barra-fundo">
         <div
-          className={`licenca-barra-progresso licenca-barra-${cor}`}
+          className={`licenca-pill-barra licenca-barra-${cor}`}
           style={{ width: `${progresso}%` }}
         />
       </div>
-      {!expirou && (
-        <span className="licenca-expira-em">
-          Vence em {expira.toLocaleDateString('pt-BR')}
-        </span>
-      )}
     </div>
   )
 }
@@ -76,6 +71,7 @@ export default function Dashboard() {
     <div className="page">
       <div className="page-header">
         <h1>🏖️ Barraca</h1>
+        <StatusLicenca licenca={licenca} />
       </div>
 
       <div className="dashboard-grid">
@@ -108,8 +104,6 @@ export default function Dashboard() {
           Configurações
         </Link>
       </div>
-
-      <StatusLicenca licenca={licenca} />
 
       <p className="section-title">Indicadores de hoje</p>
       <div className="indicadores">

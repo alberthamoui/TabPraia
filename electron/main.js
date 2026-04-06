@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const { configurarUpdater } = require('./updater')
 const path = require('path')
 const fs = require('fs')
 
@@ -88,6 +89,7 @@ app.whenReady().then(async () => {
   await verificarLicenca()
   registerHandlers()
   createWindow()
+  configurarUpdater()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

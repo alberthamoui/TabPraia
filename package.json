@@ -7,7 +7,8 @@
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "build": "vite build",
-    "dist": "vite build && electron-builder",
+    "dist": "vite build && electron-builder --publish never",
+    "release": "vite build && electron-builder --publish always",
     "preview": "vite preview"
   },
   "build": {
@@ -31,11 +32,19 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "alberthamoui",
+        "repo": "TabPraia"
+      }
+    ]
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.3.9",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

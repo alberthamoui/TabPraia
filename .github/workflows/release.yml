@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Rebuild módulos nativos
+        run: npm run rebuild
+
+      - name: Build e publicar
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_APP_SECRET: ${{ secrets.VITE_APP_SECRET }}
+        run: npm run release
