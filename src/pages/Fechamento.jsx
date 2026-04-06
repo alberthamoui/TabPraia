@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Toast from '../components/Toast'
 import { useToast } from '../hooks/useToast'
+import PixModal from '../components/PixModal'
 
 const fmt = (v) =>
   'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
@@ -15,6 +16,7 @@ export default function Fechamento() {
   const [itens, setItens] = useState([])
   const [formaPagamento, setFormaPagamento] = useState('')
   const [loading, setLoading] = useState(false)
+  const [pixAberto, setPixAberto] = useState(false)
 
   useEffect(() => {
     async function carregar() {
@@ -36,6 +38,11 @@ export default function Fechamento() {
 
   async function confirmar() {
     if (!formaPagamento) { show('Selecione a forma de pagamento', 'erro'); return }
+    if (formaPagamento === 'pix') { setPixAberto(true); return }
+    await fechar()
+  }
+
+  async function fechar() {
     setLoading(true)
     const res = await window.api['comandas_fechar']({ id: Number(id), forma_pagamento: formaPagamento })
     setLoading(false)
@@ -107,6 +114,14 @@ export default function Fechamento() {
       >
         {loading ? 'Processando…' : '✅ Confirmar Recebimento'}
       </button>
+
+      {pixAberto && (
+        <PixModal
+          valor={comanda.total}
+          onConfirmar={() => { setPixAberto(false); fechar() }}
+          onCancelar={() => setPixAberto(false)}
+        />
+      )}
 
       <Toast toasts={toasts} />
     </div>

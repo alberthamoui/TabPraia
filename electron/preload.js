@@ -20,6 +20,9 @@ const channels = [
   'itens:adicionar',
   'itens:atualizarQuantidade',
   'itens:remover',
+  'pix:salvarConfig',
+  'pix:obterConfig',
+  'pix:gerarQR',
 ]
 
 const api = {}

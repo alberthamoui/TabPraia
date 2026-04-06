@@ -44,6 +44,10 @@ export default function Dashboard() {
           <span className="icon">📜</span>
           Histórico
         </Link>
+        <Link to="/configuracoes" className="dashboard-btn">
+          <span className="icon">⚙️</span>
+          Configurações
+        </Link>
       </div>
 
       <p className="section-title">Indicadores de hoje</p>

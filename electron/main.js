@@ -46,6 +46,7 @@ function registerHandlers() {
   const produtos = require('./db/produtos')
   const comandas = require('./db/comandas')
   const itens = require('./db/itens')
+  const pix = require('./pix')
 
   function handle(channel, fn) {
     ipcMain.handle(channel, async (_event, args) => {
@@ -81,4 +82,15 @@ function registerHandlers() {
   handle('itens:adicionar', (args) => itens.adicionar(args))
   handle('itens:atualizarQuantidade', (args) => itens.atualizarQuantidade(args))
   handle('itens:remover', (args) => itens.remover(args))
+
+  // PIX
+  handle('pix:salvarConfig', (args) => pix.salvarChaveConfig(args))
+  handle('pix:obterConfig', () => pix.obterChaveConfig())
+  ipcMain.handle('pix:gerarQR', async (_event, args) => {
+    try {
+      return { ok: true, data: await pix.gerarQR(args) }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
 }

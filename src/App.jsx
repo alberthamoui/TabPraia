@@ -7,6 +7,7 @@ import Fechamento from './pages/Fechamento'
 import Historico from './pages/Historico'
 import ResumoDia from './pages/ResumoDia'
 import Produtos from './pages/Produtos'
+import Configuracoes from './pages/Configuracoes'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/historico" element={<Historico />} />
         <Route path="/resumo-dia" element={<ResumoDia />} />
         <Route path="/produtos" element={<Produtos />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
       </Routes>
     </HashRouter>
   )

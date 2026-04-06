@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-electron/
+PROMPT_INICIAL.md
+SPEC.md
 release/
 *.db
 *.db-shm
