@@ -9,3 +9,4 @@ release/
 *.db-wal
 .env
 .claude/
+futuro.md
