@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom'
 import Toast from '../components/Toast'
 import { useToast } from '../hooks/useToast'
 
+const MENSAGENS_ERRO_LICENCA = {
+  chave_invalida: 'Chave inválida ou não encontrada.',
+  revogada: 'Esta licença foi revogada.',
+  hardware_mismatch: 'Esta chave já está ativada em outro computador.',
+  expirada: 'Sua licença expirou.',
+  erro_rede: 'Não foi possível conectar ao servidor.',
+}
+
+function formatarChave(valor) {
+  const hex = valor.replace(/[^A-Fa-f0-9]/g, '').toUpperCase().slice(0, 16)
+  const partes = hex.match(/.{1,4}/g) || []
+  return partes.join('-')
+}
+
 function validarCPF(digits) {
   if (/^(\d)\1{10}$/.test(digits)) return false
   let sum = 0
@@ -75,6 +89,11 @@ export default function Configuracoes() {
   const [configurado, setConfigurado] = useState(false)
   const [salvando, setSalvando] = useState(false)
 
+  const [licenca, setLicenca] = useState(null)
+  const [novaChaveLicenca, setNovaChaveLicenca] = useState('')
+  const [erroLicenca, setErroLicenca] = useState(null)
+  const [ativandoLicenca, setAtivandoLicenca] = useState(false)
+
   useEffect(() => {
     window.api['pix_obterConfig']().then((res) => {
       if (res.ok && res.data) {
@@ -86,10 +105,38 @@ export default function Configuracoes() {
         setConfigurado(res.data.configurado)
       }
     })
+    window.api['licenca_status']().then((res) => {
+      if (res.ok) setLicenca(res.data?.licenca)
+    })
   }, [])
 
   function set(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
+  }
+
+  async function ativarLicenca(e) {
+    e.preventDefault()
+    if (novaChaveLicenca.length !== 19) {
+      setErroLicenca('Informe a chave completa no formato XXXX-XXXX-XXXX-XXXX.')
+      return
+    }
+    setAtivandoLicenca(true)
+    setErroLicenca(null)
+    try {
+      const res = await window.api.licenca_ativar({ chave: novaChaveLicenca })
+      if (res.ok) {
+        const status = await window.api['licenca_status']()
+        if (status.ok) setLicenca(status.data?.licenca)
+        setNovaChaveLicenca('')
+        show('Licença ativada com sucesso', 'sucesso')
+      } else {
+        setErroLicenca(MENSAGENS_ERRO_LICENCA[res.motivo] || 'Erro ao ativar a licença.')
+      }
+    } catch {
+      setErroLicenca(MENSAGENS_ERRO_LICENCA.erro_rede)
+    } finally {
+      setAtivandoLicenca(false)
+    }
   }
 
   async function salvar(e) {
@@ -161,6 +208,40 @@ export default function Configuracoes() {
           <div className="form-actions">
             <button className="btn btn-primary" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div className="card">
+        <p className="section-title">Chave de Acesso</p>
+        {licenca && (
+          <p className="config-status">
+            Licença ativa — chave:{' '}
+            <strong>{licenca.chave}</strong>
+          </p>
+        )}
+        <form onSubmit={ativarLicenca}>
+          <div className="form-group">
+            <label>Nova chave de licença</label>
+            <input
+              type="text"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              value={novaChaveLicenca}
+              onChange={(e) => { setNovaChaveLicenca(formatarChave(e.target.value)); setErroLicenca(null) }}
+              maxLength={19}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            {erroLicenca && <span className="chave-status invalido">{erroLicenca}</span>}
+          </div>
+          <div className="form-actions">
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={ativandoLicenca || novaChaveLicenca.length !== 19}
+            >
+              {ativandoLicenca ? 'Ativando…' : 'Ativar'}
             </button>
           </div>
         </form>
