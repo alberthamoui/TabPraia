@@ -1,7 +1,0 @@
-{
-  "installCommand": "cd tabpraia-backend && npm install",
-  "buildCommand": null,
-  "functions": {
-    "tabpraia-backend/api/*.js": { "maxDuration": 10 }
-  }
-}
