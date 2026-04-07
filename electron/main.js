@@ -34,7 +34,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    title: 'Barraca',
+    title: 'TabPraia',
     autoHideMenuBar: true,
   })
 

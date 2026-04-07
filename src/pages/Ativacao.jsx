@@ -53,7 +53,7 @@ export default function Ativacao({ onAtivado }) {
     <div className="ativacao-page">
       <div className="ativacao-card">
         <div className="ativacao-logo">🏖️</div>
-        <h1 className="ativacao-titulo">Barraca</h1>
+        <h1 className="ativacao-titulo">TabPraia</h1>
         <p className="ativacao-sub">Insira sua chave para ativar o aplicativo</p>
 
         <form onSubmit={ativar}>

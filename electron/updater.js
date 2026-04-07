@@ -16,7 +16,7 @@ function configurarUpdater() {
       .showMessageBox({
         type: 'info',
         title: 'Atualização pronta',
-        message: 'Uma nova versão do Barraca foi baixada.',
+        message: 'Uma nova versão do TabPraia foi baixada.',
         detail: 'Reinicie o app para aplicar a atualização.',
         buttons: ['Reiniciar agora', 'Mais tarde'],
         defaultId: 0,
