@@ -57,6 +57,7 @@ function StatusLicenca({ licenca }) {
 export default function Dashboard() {
   const [dados, setDados] = useState(null)
   const [licenca, setLicenca] = useState(null)
+  const [nomeBarraca, setNomeBarraca] = useState('Barraca')
 
   useEffect(() => {
     window.api['comandas_indicadoresDashboard']().then((res) => {
@@ -65,12 +66,15 @@ export default function Dashboard() {
     window.api['licenca_status']().then((res) => {
       if (res.ok) setLicenca(res.data?.licenca)
     })
+    window.api['pix_obterConfig']().then((res) => {
+      if (res.ok && res.data?.nome) setNomeBarraca(res.data.nome)
+    })
   }, [])
 
   return (
     <div className="page">
       <div className="page-header">
-        <h1>🏖️ Barraca</h1>
+        <h1>🏖️ Barraca do {nomeBarraca}</h1>
         <StatusLicenca licenca={licenca} />
       </div>
 
@@ -82,10 +86,6 @@ export default function Dashboard() {
         <Link to="/comandas-abertas" className="dashboard-btn">
           <span className="icon">📋</span>
           Comandas em Aberto
-        </Link>
-        <Link to="/comandas-abertas" className="dashboard-btn">
-          <span className="icon">💰</span>
-          Fechar Conta
         </Link>
         <Link to="/produtos" className="dashboard-btn">
           <span className="icon">🛒</span>

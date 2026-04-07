@@ -11,6 +11,7 @@ const channels = [
   'produtos:criar',
   'produtos:editar',
   'produtos:toggleAtivo',
+  'produtos:apagar',
   // Comandas
   'comandas:listarAbertas',
   'comandas:listarFechadas',

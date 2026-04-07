@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Toast from '../components/Toast'
+import Modal from '../components/Modal'
 import { useToast } from '../hooks/useToast'
 
 const fmt = (v) =>
@@ -13,6 +14,8 @@ export default function Produtos() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [editando, setEditando] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [modalApagar, setModalApagar] = useState(null)
+  const [categoriaFiltro, setCategoriaFiltro] = useState('Todos')
   const { toasts, show } = useToast()
 
   async function carregar() {
@@ -64,6 +67,24 @@ export default function Produtos() {
       show(res.error || 'Erro', 'erro')
     }
   }
+
+  async function confirmarApagar() {
+    const p = modalApagar
+    setModalApagar(null)
+    const res = await window.api['produtos_apagar']({ id: p.id })
+    if (res.ok) {
+      show('Produto apagado')
+      carregar()
+    } else {
+      show(res.error || 'Erro ao apagar', 'erro')
+    }
+  }
+
+  const categorias = ['Todos', ...Array.from(new Set(produtos.map((p) => p.categoria || 'Sem categoria')))]
+
+  const produtosFiltrados = categoriaFiltro === 'Todos'
+    ? produtos
+    : produtos.filter((p) => (p.categoria || 'Sem categoria') === categoriaFiltro)
 
   return (
     <div className="page">
@@ -118,6 +139,19 @@ export default function Produtos() {
       </div>
 
       <div className="card">
+        {categorias.length > 1 && (
+          <div className="categoria-tabs" style={{ marginBottom: 16 }}>
+            {categorias.map((cat) => (
+              <button
+                key={cat}
+                className={`btn btn-sm ${categoriaFiltro === cat ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setCategoriaFiltro(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
         <table>
           <thead>
             <tr>
@@ -129,10 +163,10 @@ export default function Produtos() {
             </tr>
           </thead>
           <tbody>
-            {produtos.length === 0 && (
+            {produtosFiltrados.length === 0 && (
               <tr><td colSpan={5} className="empty">Nenhum produto</td></tr>
             )}
-            {produtos.map((p) => (
+            {produtosFiltrados.map((p) => (
               <tr key={p.id} style={{ opacity: p.ativo ? 1 : 0.5 }}>
                 <td className="font-bold">{p.nome}</td>
                 <td>{p.categoria || '—'}</td>
@@ -156,6 +190,12 @@ export default function Produtos() {
                     >
                       {p.ativo ? 'Inativar' : 'Ativar'}
                     </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => setModalApagar(p)}
+                    >
+                      Apagar
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -163,6 +203,15 @@ export default function Produtos() {
           </tbody>
         </table>
       </div>
+
+      {modalApagar && (
+        <Modal
+          titulo="Apagar produto"
+          mensagem={`Apagar "${modalApagar.nome}" permanentemente? Essa ação não pode ser desfeita.`}
+          onConfirmar={confirmarApagar}
+          onCancelar={() => setModalApagar(null)}
+        />
+      )}
 
       <Toast toasts={toasts} />
     </div>

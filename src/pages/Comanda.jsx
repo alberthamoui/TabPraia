@@ -21,6 +21,7 @@ export default function Comanda() {
   const [modalRemover, setModalRemover] = useState(null)
   const [modalDeletar, setModalDeletar] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [categoriaFiltro, setCategoriaFiltro] = useState('Todos')
 
   async function carregar() {
     const [rc, ri, rp] = await Promise.all([
@@ -102,19 +103,42 @@ export default function Comanda() {
       {!fechada && (
         <>
           <p className="section-title">Adicionar produto</p>
-          <div className="produtos-grid">
-            {produtos.map((p) => (
-              <button
-                key={p.id}
-                className="produto-rapido"
-                onClick={() => adicionarProduto(p.id)}
-                disabled={loading}
-              >
-                {p.nome}
-                <span className="preco">{fmt(p.preco)}</span>
-              </button>
-            ))}
-          </div>
+          {(() => {
+            const categorias = ['Todos', ...Array.from(new Set(produtos.map((p) => p.categoria || 'Sem categoria')))]
+            const produtosFiltrados = categoriaFiltro === 'Todos'
+              ? produtos
+              : produtos.filter((p) => (p.categoria || 'Sem categoria') === categoriaFiltro)
+            return (
+              <>
+                {categorias.length > 1 && (
+                  <div className="categoria-tabs" style={{ marginBottom: 12 }}>
+                    {categorias.map((cat) => (
+                      <button
+                        key={cat}
+                        className={`btn btn-sm ${categoriaFiltro === cat ? 'btn-primary' : 'btn-ghost'}`}
+                        onClick={() => setCategoriaFiltro(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="produtos-grid">
+                  {produtosFiltrados.map((p) => (
+                    <button
+                      key={p.id}
+                      className="produto-rapido"
+                      onClick={() => adicionarProduto(p.id)}
+                      disabled={loading}
+                    >
+                      {p.nome}
+                      <span className="preco">{fmt(p.preco)}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )
+          })()}
         </>
       )}
 

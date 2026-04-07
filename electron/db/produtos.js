@@ -28,4 +28,11 @@ function toggleAtivo({ id }) {
   return db.prepare('SELECT * FROM produtos WHERE id = ?').get(id)
 }
 
-module.exports = { listar, listarAtivos, criar, editar, toggleAtivo }
+function apagar({ id }) {
+  const emUso = db.prepare('SELECT COUNT(*) as c FROM itens_comanda WHERE produto_id = ?').get(id).c
+  if (emUso > 0) throw new Error('Produto está em uso em comandas e não pode ser apagado. Inative-o em vez disso.')
+  db.prepare('DELETE FROM produtos WHERE id = ?').run(id)
+  return { apagado: true }
+}
+
+module.exports = { listar, listarAtivos, criar, editar, toggleAtivo, apagar }

@@ -158,6 +158,7 @@ function registerHandlers() {
   handle('produtos:criar', (args) => produtos.criar(args))
   handle('produtos:editar', (args) => produtos.editar(args))
   handle('produtos:toggleAtivo', (args) => produtos.toggleAtivo(args))
+  handle('produtos:apagar', (args) => produtos.apagar(args))
 
   // ── Comandas ─────────────────────────────────────────────────────────────
   handle('comandas:listarAbertas', () => comandas.listarAbertas())
