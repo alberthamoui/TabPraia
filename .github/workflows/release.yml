@@ -20,8 +20,8 @@ jobs:
 
       - name: Atualizar versão no package.json
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          npm version $VERSION --no-git-tag-version
+          $version = "$env:GITHUB_REF_NAME".TrimStart("v")
+          npm version $version --no-git-tag-version
 
       - name: Instalar dependências
         run: npm install
