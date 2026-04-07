@@ -9,5 +9,6 @@ release/
 *.db-shm
 *.db-wal
 .env
+electron/env.js
 .claude/
 anotacoes/

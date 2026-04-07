@@ -29,6 +29,13 @@ jobs:
       - name: Rebuild módulos nativos
         run: npm run rebuild
 
+      - name: Gerar electron/env.js com variáveis de ambiente
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_APP_SECRET: ${{ secrets.VITE_APP_SECRET }}
+        run: |
+          "module.exports = { API_URL: '$env:VITE_API_URL', APP_SECRET: '$env:VITE_APP_SECRET' }" | Out-File -FilePath electron/env.js -Encoding utf8
+
       - name: Build e publicar
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

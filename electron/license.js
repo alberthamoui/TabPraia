@@ -14,12 +14,16 @@ function getLicensePath() {
   return path.join(app.getPath('userData'), 'license.json')
 }
 
+function getEnv() {
+  try { return require('./env') } catch { return {} }
+}
+
 function getApiUrl() {
-  return process.env.VITE_API_URL || 'http://localhost:3000'
+  return getEnv().API_URL || process.env.VITE_API_URL || 'http://localhost:3000'
 }
 
 function getAppSecret() {
-  return process.env.VITE_APP_SECRET || ''
+  return getEnv().APP_SECRET || process.env.VITE_APP_SECRET || ''
 }
 
 // ─── Hardware ID ─────────────────────────────────────────────────────────────
