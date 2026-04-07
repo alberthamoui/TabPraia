@@ -93,6 +93,7 @@ export default function Configuracoes() {
   const [novaChaveLicenca, setNovaChaveLicenca] = useState('')
   const [erroLicenca, setErroLicenca] = useState(null)
   const [ativandoLicenca, setAtivandoLicenca] = useState(false)
+  const [desativando, setDesativando] = useState(false)
 
   useEffect(() => {
     window.api['pix_obterConfig']().then((res) => {
@@ -112,6 +113,25 @@ export default function Configuracoes() {
 
   function set(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
+  }
+
+  async function desativarLicenca() {
+    if (!window.confirm('Isso vai deslogar a licença deste computador. Deseja continuar?')) return
+    setDesativando(true)
+    try {
+      const res = await window.api.licenca_desativar()
+      if (res.ok) {
+        setLicenca(null)
+        show('Licença desativada. O app será fechado.', 'sucesso')
+        setTimeout(() => window.api['licenca_status'](), 1500)
+      } else {
+        show(MENSAGENS_ERRO_LICENCA[res.motivo] || 'Erro ao desativar.', 'erro')
+      }
+    } catch {
+      show('Não foi possível conectar ao servidor.', 'erro')
+    } finally {
+      setDesativando(false)
+    }
   }
 
   async function ativarLicenca(e) {
@@ -216,10 +236,18 @@ export default function Configuracoes() {
       <div className="card">
         <p className="section-title">Chave de Acesso</p>
         {licenca && (
-          <p className="config-status">
-            Licença ativa — chave:{' '}
-            <strong>{licenca.chave}</strong>
-          </p>
+          <div className="config-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <span>Licença ativa — chave: <strong>{licenca.chave}</strong></span>
+            <button
+              className="btn btn-ghost btn-sm"
+              type="button"
+              onClick={desativarLicenca}
+              disabled={desativando}
+              style={{ color: 'var(--vermelho)', borderColor: 'var(--vermelho)' }}
+            >
+              {desativando ? 'Desativando…' : 'Logout da licença'}
+            </button>
+          </div>
         )}
         <form onSubmit={ativarLicenca}>
           <div className="form-group">

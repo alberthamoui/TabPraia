@@ -152,6 +152,19 @@ function registerHandlers() {
     }
   })
 
+  ipcMain.handle('licenca:desativar', async () => {
+    try {
+      const resultado = await licenca.desativar()
+      if (resultado.ok) {
+        appState.ativo = false
+        appState.licenca = null
+      }
+      return resultado
+    } catch (err) {
+      return { ok: false, motivo: 'erro_rede', mensagem: err.message }
+    }
+  })
+
   // ── Produtos ─────────────────────────────────────────────────────────────
   handle('produtos:listar', () => produtos.listar())
   handle('produtos:listarAtivos', () => produtos.listarAtivos())

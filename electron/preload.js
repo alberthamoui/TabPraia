@@ -5,6 +5,7 @@ const channels = [
   'licenca:status',
   'licenca:ativar',
   'licenca:validar',
+  'licenca:desativar',
   // Produtos
   'produtos:listar',
   'produtos:listarAtivos',

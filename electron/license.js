@@ -153,6 +153,15 @@ async function validarOnline(chave) {
   return resultado
 }
 
+async function desativar() {
+  const dados = lerLicenca()
+  if (!dados) return { ok: false, motivo: 'sem_licenca' }
+  const hardware_id = getHardwareId()
+  const resultado = await chamarApi('/api/desativar', { chave: dados.chave, hardware_id })
+  if (resultado.ok) deletarLicenca()
+  return resultado
+}
+
 module.exports = {
   getHardwareId,
   lerLicenca,
@@ -162,6 +171,7 @@ module.exports = {
   emGracePeriod,
   ativar,
   validarOnline,
+  desativar,
   construirLicencaLocal,
   VALIDATION_INTERVAL_DAYS,
   GRACE_PERIOD_DAYS,
