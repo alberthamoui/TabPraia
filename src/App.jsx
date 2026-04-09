@@ -45,7 +45,7 @@ export default function App() {
         <Route path="/historico" element={<Historico />} />
         <Route path="/resumo-dia" element={<ResumoDia />} />
         <Route path="/produtos" element={<Produtos />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/configuracoes" element={<Configuracoes onDesativado={() => setLicenciado(false)} />} />
       </Routes>
     </HashRouter>
   )

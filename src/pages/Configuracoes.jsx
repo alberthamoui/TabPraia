@@ -83,7 +83,7 @@ function ChaveStatus({ chave }) {
   return <span className="chave-status valido">{d.tipo} válido</span>
 }
 
-export default function Configuracoes() {
+export default function Configuracoes({ onDesativado }) {
   const { toasts, show } = useToast()
   const [form, setForm] = useState({ chave: '', nome: '', cidade: '' })
   const [configurado, setConfigurado] = useState(false)
@@ -121,9 +121,7 @@ export default function Configuracoes() {
     try {
       const res = await window.api.licenca_desativar()
       if (res.ok) {
-        setLicenca(null)
-        show('Licença desativada. O app será fechado.', 'sucesso')
-        setTimeout(() => window.api['licenca_status'](), 1500)
+        onDesativado()
       } else {
         show(MENSAGENS_ERRO_LICENCA[res.motivo] || 'Erro ao desativar.', 'erro')
       }
