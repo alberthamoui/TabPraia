@@ -37,7 +37,8 @@
       {
         "provider": "github",
         "owner": "alberthamoui",
-        "repo": "TabPraia"
+        "repo": "TabPraia",
+        "releaseType": "release"
       }
     ]
   },

@@ -3,12 +3,14 @@ dist/
 dist-electron/
 PROMPT_INICIAL.md
 SPEC.md
-Barraca-Setup-1.0.0.exe
+*.exe
 release/
 *.db
 *.db-shm
 *.db-wal
 .env
+tabpraia-admin/.env.local
+tabpraia-backend\.env.example
 electron/env.js
 .claude/
 anotacoes/

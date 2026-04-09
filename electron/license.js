@@ -6,7 +6,7 @@ const os = require('os')
 const { execSync } = require('child_process')
 
 const VALIDATION_INTERVAL_DAYS = 30
-const GRACE_PERIOD_DAYS = 7
+const GRACE_PERIOD_DAYS = 5
 
 // ─── Helpers de caminho ─────────────────────────────────────────────────────
 

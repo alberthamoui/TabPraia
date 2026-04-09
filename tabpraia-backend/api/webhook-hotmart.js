@@ -15,6 +15,15 @@ function responder(res, status, body) {
   res.end(JSON.stringify(body))
 }
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 /**
  * Identifica se o produto é uma assinatura mensal ou licença permanente.
  * Ajuste a lógica conforme os nomes dos seus produtos na Hotmart.
@@ -47,7 +56,7 @@ async function enviarEmailChave({ email, nome, chave, tipo }) {
   const html = `
     <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
       <h1 style="color: #1a6fc4;">🏖️ TabPraia — Licença Ativada</h1>
-      <p>Olá, <strong>${nome}</strong>!</p>
+      <p>Olá, <strong>${escapeHtml(nome)}</strong>!</p>
       <p>Sua licença foi aprovada. Use a chave abaixo para ativar o aplicativo:</p>
       <div style="background: #f4f6f8; border-radius: 8px; padding: 20px; text-align: center; margin: 24px 0;">
         <code style="font-size: 1.4rem; letter-spacing: 0.15em; font-weight: bold; color: #145499;">
@@ -112,7 +121,12 @@ module.exports = async function handler(req, res) {
     return responder(res, 400, { ok: false, motivo: 'email_ausente' })
   }
 
-  const tipo = identificarTipo(payload)
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailCliente)) {
+    return responder(res, 400, { ok: false, motivo: 'email_invalido' })
+  }
+
+  let tipo = identificarTipo(payload)
+  if (!['permanente', 'mensal'].includes(tipo)) tipo = 'permanente'
   const expira_em = calcularExpiracao(tipo)
   const chave = gerarChave()
 
