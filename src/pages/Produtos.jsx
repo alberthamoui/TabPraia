@@ -81,6 +81,7 @@ export default function Produtos() {
   }
 
   const categorias = ['Todos', ...Array.from(new Set(produtos.map((p) => p.categoria || 'Sem categoria')))]
+  const categoriasExistentes = Array.from(new Set(produtos.map((p) => p.categoria).filter(Boolean)))
 
   const produtosFiltrados = categoriaFiltro === 'Todos'
     ? produtos
@@ -105,25 +106,29 @@ export default function Produtos() {
               placeholder="Ex: Refrigerante"
             />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="form-group">
-              <label>Preço (R$) *</label>
-              <input
-                type="text"
-                value={form.preco}
-                onChange={(e) => setForm({ ...form, preco: e.target.value })}
-                placeholder="Ex: 6,00"
-              />
-            </div>
-            <div className="form-group">
-              <label>Categoria</label>
-              <input
-                type="text"
-                value={form.categoria}
-                onChange={(e) => setForm({ ...form, categoria: e.target.value })}
-                placeholder="Ex: bebida"
-              />
-            </div>
+          <div className="form-group">
+            <label>Preço (R$) *</label>
+            <input
+              type="text"
+              value={form.preco}
+              onChange={(e) => setForm({ ...form, preco: e.target.value })}
+              placeholder="Ex: 6,00"
+            />
+          </div>
+          <div className="form-group">
+            <label>Categoria</label>
+            <input
+              type="text"
+              list="categorias-existentes"
+              value={form.categoria}
+              onChange={(e) => setForm({ ...form, categoria: e.target.value })}
+              placeholder="Ex: bebida"
+            />
+            <datalist id="categorias-existentes">
+              {categoriasExistentes.map((cat) => (
+                <option key={cat} value={cat} />
+              ))}
+            </datalist>
           </div>
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={loading}>
@@ -140,16 +145,16 @@ export default function Produtos() {
 
       <div className="card">
         {categorias.length > 1 && (
-          <div className="categoria-tabs" style={{ marginBottom: 16 }}>
-            {categorias.map((cat) => (
-              <button
-                key={cat}
-                className={`btn btn-sm ${categoriaFiltro === cat ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => setCategoriaFiltro(cat)}
-              >
-                {cat}
-              </button>
-            ))}
+          <div style={{ marginBottom: 16 }}>
+            <select
+              value={categoriaFiltro}
+              onChange={(e) => setCategoriaFiltro(e.target.value)}
+              className="filtro-categoria-select"
+            >
+              {categorias.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
         )}
         <table>
