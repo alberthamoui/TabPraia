@@ -58,7 +58,7 @@ export default function Fechamento() {
   return (
     <div className="page">
       <div className="page-header">
-        <Link to={`/comanda/${id}`} className="btn btn-ghost btn-sm">← Voltar</Link>
+        <Link to="/" className="btn btn-ghost btn-sm">← Voltar</Link>
         <h1>Fechar Conta — {comanda.nome_cliente}</h1>
       </div>
 

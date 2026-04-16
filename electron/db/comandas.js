@@ -60,16 +60,45 @@ function indicadoresDia() {
 
 function indicadoresDashboard() {
   const hoje = new Date().toISOString().slice(0, 10)
-  const abertas = db.prepare("SELECT COUNT(*) as c FROM comandas WHERE status = 'aberta'").get().c
+  const abertas_hoje = db.prepare(
+    "SELECT COUNT(*) as c FROM comandas WHERE status = 'aberta' AND DATE(criada_em) = ?"
+  ).get(hoje).c
   const financeiro = db.prepare(`
     SELECT
       COALESCE(SUM(total), 0) as total_vendido,
-      COALESCE(SUM(CASE WHEN forma_pagamento = 'pix' THEN total ELSE 0 END), 0) as total_pix,
-      COALESCE(SUM(CASE WHEN forma_pagamento = 'dinheiro' THEN total ELSE 0 END), 0) as total_dinheiro
+      COALESCE(SUM(CASE WHEN status = 'fechada' THEN total ELSE 0 END), 0) as total_recebido,
+      COALESCE(SUM(CASE WHEN status = 'fechada' AND forma_pagamento = 'pix' THEN total ELSE 0 END), 0) as total_pix,
+      COALESCE(SUM(CASE WHEN status = 'fechada' AND forma_pagamento = 'dinheiro' THEN total ELSE 0 END), 0) as total_dinheiro
     FROM comandas
-    WHERE status = 'fechada' AND DATE(fechada_em) = ?
+    WHERE DATE(criada_em) = ?
   `).get(hoje)
-  return { abertas, ...financeiro }
+  return { abertas_hoje, ...financeiro }
+}
+
+function indicadoresPeriodo({ de, ate }) {
+  const sql = `
+    SELECT
+      COALESCE(SUM(total), 0) as total_vendido,
+      COALESCE(SUM(CASE WHEN status = 'fechada' THEN total ELSE 0 END), 0) as total_recebido,
+      COALESCE(SUM(CASE WHEN status = 'fechada' AND forma_pagamento = 'pix' THEN total ELSE 0 END), 0) as total_pix,
+      COALESCE(SUM(CASE WHEN status = 'fechada' AND forma_pagamento = 'dinheiro' THEN total ELSE 0 END), 0) as total_dinheiro,
+      COUNT(CASE WHEN status = 'fechada' THEN 1 END) as fechadas,
+      COUNT(CASE WHEN status = 'aberta' THEN 1 END) as abertas
+    FROM comandas
+  `
+  if (de && ate) return db.prepare(sql + ' WHERE DATE(criada_em) >= ? AND DATE(criada_em) <= ?').get(de, ate)
+  return db.prepare(sql).get()
+}
+
+function produtosMaisVendidosPeriodo({ de, ate }) {
+  const base = `
+    SELECT ic.nome_produto_snapshot as nome, SUM(ic.quantidade) as quantidade, SUM(ic.subtotal) as total
+    FROM itens_comanda ic
+    JOIN comandas c ON c.id = ic.comanda_id
+  `
+  const group = ' GROUP BY ic.nome_produto_snapshot ORDER BY quantidade DESC LIMIT 10'
+  if (de && ate) return db.prepare(base + ' WHERE DATE(c.criada_em) >= ? AND DATE(c.criada_em) <= ?' + group).all(de, ate)
+  return db.prepare(base + group).all()
 }
 
 function produtosMaisVendidosDia() {
@@ -119,4 +148,6 @@ module.exports = {
   produtosMaisVendidosDia,
   deletar,
   limparHistorico,
+  indicadoresPeriodo,
+  produtosMaisVendidosPeriodo,
 }

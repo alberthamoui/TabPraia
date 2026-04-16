@@ -88,7 +88,7 @@ export default function Comanda() {
   return (
     <div className="page">
       <div className="page-header">
-        <Link to="/comandas-abertas" className="btn btn-ghost btn-sm">← Voltar</Link>
+        <Link to="/" className="btn btn-ghost btn-sm">← Voltar</Link>
         <h1>{comanda.nome_cliente}</h1>
         <span className={`badge badge-${comanda.status}`}>{comanda.status}</span>
       </div>

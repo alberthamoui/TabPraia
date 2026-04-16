@@ -7,7 +7,7 @@ import Comanda from './pages/Comanda'
 import ComandasAbertas from './pages/ComandasAbertas'
 import Fechamento from './pages/Fechamento'
 import Historico from './pages/Historico'
-import ResumoDia from './pages/ResumoDia'
+import Resumo from './pages/Resumo'
 import Produtos from './pages/Produtos'
 import Configuracoes from './pages/Configuracoes'
 
@@ -43,7 +43,7 @@ export default function App() {
         <Route path="/comandas-abertas" element={<ComandasAbertas />} />
         <Route path="/fechamento/:id" element={<Fechamento />} />
         <Route path="/historico" element={<Historico />} />
-        <Route path="/resumo-dia" element={<ResumoDia />} />
+        <Route path="/resumo" element={<Resumo />} />
         <Route path="/produtos" element={<Produtos />} />
         <Route path="/configuracoes" element={<Configuracoes onDesativado={() => setLicenciado(false)} />} />
       </Routes>

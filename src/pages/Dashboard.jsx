@@ -91,9 +91,9 @@ export default function Dashboard() {
           <span className="icon">🛒</span>
           Produtos
         </Link>
-        <Link to="/resumo-dia" className="dashboard-btn">
+        <Link to="/resumo" className="dashboard-btn">
           <span className="icon">📊</span>
-          Resumo do Dia
+          Resumo
         </Link>
         <Link to="/historico" className="dashboard-btn">
           <span className="icon">📜</span>
@@ -108,20 +108,16 @@ export default function Dashboard() {
       <p className="section-title">Indicadores de hoje</p>
       <div className="indicadores">
         <div className="indicador">
-          <div className="indicador-label">Comandas abertas</div>
-          <div className="indicador-valor">{dados?.abertas ?? '—'}</div>
+          <div className="indicador-label">Comandas abertas hoje</div>
+          <div className="indicador-valor">{dados?.abertas_hoje ?? '—'}</div>
         </div>
         <div className="indicador">
           <div className="indicador-label">Total vendido hoje</div>
           <div className="indicador-valor">{dados ? fmt(dados.total_vendido) : '—'}</div>
         </div>
         <div className="indicador">
-          <div className="indicador-label">Recebido em Pix</div>
-          <div className="indicador-valor verde">{dados ? fmt(dados.total_pix) : '—'}</div>
-        </div>
-        <div className="indicador">
-          <div className="indicador-label">Recebido em dinheiro</div>
-          <div className="indicador-valor amarelo">{dados ? fmt(dados.total_dinheiro) : '—'}</div>
+          <div className="indicador-label">Total recebido hoje</div>
+          <div className="indicador-valor verde">{dados ? fmt(dados.total_recebido) : '—'}</div>
         </div>
       </div>
     </div>

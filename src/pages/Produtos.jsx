@@ -68,6 +68,12 @@ export default function Produtos() {
     }
   }
 
+  async function baixarModelo() {
+    const res = await window.api['produtos_baixarModeloExcel']()
+    if (res.cancelado) return
+    if (!res.ok) show(res.error || 'Não foi possível salvar o modelo', 'erro')
+  }
+
   async function importarExcel() {
     const res = await window.api['produtos_importarExcel']()
     if (res.cancelado) return
@@ -102,9 +108,19 @@ export default function Produtos() {
       <div className="page-header">
         <Link to="/" className="btn btn-ghost btn-sm">← Voltar</Link>
         <h1>Produtos</h1>
-        <button className="btn btn-outline btn-sm" onClick={importarExcel}>
-          Importar Excel
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn btn-ghost btn-sm" onClick={baixarModelo}>
+              Baixar modelo
+            </button>
+            <button className="btn btn-outline btn-sm" onClick={importarExcel}>
+              Importar Excel
+            </button>
+          </div>
+          <span style={{ fontSize: 11, color: 'var(--text-muted, #888)' }}>
+            Colunas esperadas: <strong>Produto</strong>, <strong>Preço</strong>, <strong>Categoria</strong>
+          </span>
+        </div>
       </div>
 
       <div className="card" style={{ maxWidth: 520, marginBottom: 28 }}>

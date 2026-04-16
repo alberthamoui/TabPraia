@@ -173,6 +173,33 @@ function registerHandlers() {
   handle('produtos:toggleAtivo', (args) => produtos.toggleAtivo(args))
   handle('produtos:apagar', (args) => produtos.apagar(args))
 
+  ipcMain.handle('produtos:baixarModeloExcel', async () => {
+    try {
+      const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Salvar modelo de planilha',
+        defaultPath: 'modelo-produtos.xlsx',
+        filters: [{ name: 'Excel', extensions: ['xlsx'] }],
+      })
+      if (canceled || !filePath) return { ok: false, cancelado: true }
+
+      const XLSX = require('xlsx')
+      const dados = [
+        { Produto: 'Coca-Cola', 'Preço': 6.00, Categoria: 'Bebidas' },
+        { Produto: 'Água de coco', 'Preço': 8.00, Categoria: 'Bebidas' },
+        { Produto: 'Misto quente', 'Preço': 12.00, Categoria: 'Lanches' },
+      ]
+      const ws = XLSX.utils.json_to_sheet(dados)
+      ws['!cols'] = [{ wch: 30 }, { wch: 10 }, { wch: 20 }]
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Produtos')
+      XLSX.writeFile(wb, filePath)
+
+      return { ok: true }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
+
   ipcMain.handle('produtos:importarExcel', async () => {
     try {
       const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -229,6 +256,8 @@ function registerHandlers() {
   handle('comandas:indicadoresDashboard', () => comandas.indicadoresDashboard())
   handle('comandas:produtosMaisVendidosDia', () => comandas.produtosMaisVendidosDia())
   handle('comandas:deletar', (args) => comandas.deletar(args))
+  handle('comandas:indicadoresPeriodo', (args) => comandas.indicadoresPeriodo(args))
+  handle('comandas:produtosMaisVendidosPeriodo', (args) => comandas.produtosMaisVendidosPeriodo(args))
   handle('comandas:limparHistorico', () => comandas.limparHistorico())
 
   // ── Itens ────────────────────────────────────────────────────────────────
