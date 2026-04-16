@@ -13,6 +13,7 @@ const channels = [
   'produtos:editar',
   'produtos:toggleAtivo',
   'produtos:apagar',
+  'produtos:importarExcel',
   // Comandas
   'comandas:listarAbertas',
   'comandas:listarFechadas',
@@ -24,6 +25,7 @@ const channels = [
   'comandas:indicadoresDashboard',
   'comandas:produtosMaisVendidosDia',
   'comandas:deletar',
+  'comandas:limparHistorico',
   // Itens
   'itens:listarPorComanda',
   'itens:adicionar',

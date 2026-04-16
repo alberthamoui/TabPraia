@@ -95,6 +95,17 @@ function deletar({ id }) {
   })()
 }
 
+function limparHistorico() {
+  const ids = db.prepare("SELECT id FROM comandas WHERE status = 'fechada'").all().map((r) => r.id)
+  if (ids.length === 0) return { apagadas: 0 }
+  db.transaction(() => {
+    db.prepare(`DELETE FROM itens_comanda WHERE comanda_id IN (${ids.map(() => '?').join(',')})`)
+      .run(...ids)
+    db.prepare("DELETE FROM comandas WHERE status = 'fechada'").run()
+  })()
+  return { apagadas: ids.length }
+}
+
 module.exports = {
   listarAbertas,
   listarFechadas,
@@ -107,4 +118,5 @@ module.exports = {
   indicadoresDashboard,
   produtosMaisVendidosDia,
   deletar,
+  limparHistorico,
 }

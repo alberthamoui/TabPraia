@@ -161,7 +161,7 @@ export default function Configuracoes({ onDesativado }) {
     e.preventDefault()
     if (!form.chave.trim()) { show('Informe a chave PIX', 'erro'); return }
     const deteccao = detectarChave(form.chave)
-    if (!deteccao || !deteccao.valido) { show('Chave PIX inválida — verifique o formato', 'erro'); return }
+    if (!deteccao || !deteccao.valido) { show('Chave PIX inválida. Aceito: CPF, CNPJ, e-mail, telefone ou chave aleatória', 'erro'); return }
     if (!form.nome.trim()) { show('Informe o nome do estabelecimento', 'erro'); return }
     if (!form.cidade.trim()) { show('Informe a cidade', 'erro'); return }
     setSalvando(true)

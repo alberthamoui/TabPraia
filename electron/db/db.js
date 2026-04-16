@@ -36,7 +36,7 @@ function runMigrations() {
     CREATE TABLE IF NOT EXISTS itens_comanda (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       comanda_id INTEGER NOT NULL REFERENCES comandas(id),
-      produto_id INTEGER NOT NULL REFERENCES produtos(id),
+      produto_id INTEGER REFERENCES produtos(id),
       nome_produto_snapshot TEXT NOT NULL,
       preco_unitario_snapshot REAL NOT NULL,
       quantidade INTEGER NOT NULL DEFAULT 1,
@@ -44,6 +44,35 @@ function runMigrations() {
       criado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
     );
   `)
+}
+
+function runMigrationProdutoIdNullable() {
+  const col = db.prepare("SELECT * FROM pragma_table_info('itens_comanda') WHERE name = 'produto_id'").get()
+  if (!col || col.notnull === 0) return // já está nullable, nada a fazer
+
+  // SQLite exige foreign_keys = OFF fora de qualquer transação para reconstruir tabelas
+  db.pragma('foreign_keys = OFF')
+  try {
+    db.exec(`
+      BEGIN;
+      CREATE TABLE itens_comanda_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        comanda_id INTEGER NOT NULL REFERENCES comandas(id),
+        produto_id INTEGER REFERENCES produtos(id),
+        nome_produto_snapshot TEXT NOT NULL,
+        preco_unitario_snapshot REAL NOT NULL,
+        quantidade INTEGER NOT NULL DEFAULT 1,
+        subtotal REAL NOT NULL,
+        criado_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+      );
+      INSERT INTO itens_comanda_new SELECT * FROM itens_comanda;
+      DROP TABLE itens_comanda;
+      ALTER TABLE itens_comanda_new RENAME TO itens_comanda;
+      COMMIT;
+    `)
+  } finally {
+    db.pragma('foreign_keys = ON')
+  }
 }
 
 function runSeed() {
@@ -67,6 +96,7 @@ function runSeed() {
 }
 
 runMigrations()
+runMigrationProdutoIdNullable()
 runSeed()
 
 module.exports = db

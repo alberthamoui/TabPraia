@@ -29,9 +29,22 @@ function toggleAtivo({ id }) {
 }
 
 function apagar({ id }) {
-  const emUso = db.prepare('SELECT COUNT(*) as c FROM itens_comanda WHERE produto_id = ?').get(id).c
-  if (emUso > 0) throw new Error('Produto está em uso em comandas e não pode ser apagado. Inative-o em vez disso.')
-  db.prepare('DELETE FROM produtos WHERE id = ?').run(id)
+  const emAberta = db.prepare(`
+    SELECT COUNT(*) as c FROM itens_comanda ic
+    JOIN comandas c ON c.id = ic.comanda_id
+    WHERE ic.produto_id = ? AND c.status = 'aberta'
+  `).get(id).c
+  if (emAberta > 0) throw new Error('Produto está em uma comanda aberta. Feche-a antes de apagar')
+
+  db.transaction(() => {
+    // Desvincula o produto dos itens de comandas fechadas (snapshot preserva o histórico)
+    db.prepare(`
+      UPDATE itens_comanda SET produto_id = NULL
+      WHERE produto_id = ?
+    `).run(id)
+    db.prepare('DELETE FROM produtos WHERE id = ?').run(id)
+  })()
+
   return { apagado: true }
 }
 

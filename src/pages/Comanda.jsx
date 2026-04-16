@@ -63,7 +63,7 @@ export default function Comanda() {
       const rc = await window.api['comandas_buscarPorId']({ id: Number(id) })
       if (rc.ok) setComanda(rc.data)
     } else {
-      show(res.error || 'Erro', 'erro')
+      show(res.error || 'Ocorreu um erro inesperado', 'erro')
     }
   }
 

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const { configurarUpdater } = require('./updater')
 const path = require('path')
 const fs = require('fs')
@@ -173,6 +173,51 @@ function registerHandlers() {
   handle('produtos:toggleAtivo', (args) => produtos.toggleAtivo(args))
   handle('produtos:apagar', (args) => produtos.apagar(args))
 
+  ipcMain.handle('produtos:importarExcel', async () => {
+    try {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        title: 'Selecionar planilha de produtos',
+        filters: [{ name: 'Excel', extensions: ['xlsx', 'xls'] }],
+        properties: ['openFile'],
+      })
+      if (canceled || filePaths.length === 0) return { ok: false, cancelado: true }
+
+      const XLSX = require('xlsx')
+      const wb = XLSX.readFile(filePaths[0])
+      const sheet = wb.Sheets[wb.SheetNames[0]]
+      const rows = XLSX.utils.sheet_to_json(sheet)
+
+      let importados = 0
+      const erros = []
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        const nome = row['Produto'] || row['produto'] || row['Nome'] || row['nome'] || row['PRODUTO'] || row['NOME']
+        const precoRaw = row['Preço'] || row['Preco'] || row['preco'] || row['PREÇO'] || row['Price'] || row['price']
+        const categoriaRaw = row['Categoria'] || row['categoria'] || row['CATEGORIA'] || row['Category']
+
+        if (!nome) { erros.push({ linha: i + 2, erro: 'Nome ausente' }); continue }
+        const preco = parseFloat(String(precoRaw).replace(',', '.'))
+        if (isNaN(preco) || preco <= 0) { erros.push({ linha: i + 2, erro: `Preço inválido: ${precoRaw}` }); continue }
+
+        try {
+          produtos.criar({
+            nome: String(nome).trim(),
+            preco,
+            categoria: categoriaRaw ? String(categoriaRaw).trim() : null,
+          })
+          importados++
+        } catch (err) {
+          erros.push({ linha: i + 2, erro: err.message })
+        }
+      }
+
+      return { ok: true, importados, erros }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
+
   // ── Comandas ─────────────────────────────────────────────────────────────
   handle('comandas:listarAbertas', () => comandas.listarAbertas())
   handle('comandas:listarFechadas', () => comandas.listarFechadas())
@@ -184,6 +229,7 @@ function registerHandlers() {
   handle('comandas:indicadoresDashboard', () => comandas.indicadoresDashboard())
   handle('comandas:produtosMaisVendidosDia', () => comandas.produtosMaisVendidosDia())
   handle('comandas:deletar', (args) => comandas.deletar(args))
+  handle('comandas:limparHistorico', () => comandas.limparHistorico())
 
   // ── Itens ────────────────────────────────────────────────────────────────
   handle('itens:listarPorComanda', (args) => itens.listarPorComanda(args.comanda_id))

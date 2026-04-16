@@ -40,7 +40,7 @@ export default function Produtos() {
     const nome = form.nome.trim()
     const preco = parseFloat(form.preco.replace(',', '.'))
     if (!nome) { show('Informe o nome do produto', 'erro'); return }
-    if (isNaN(preco) || preco <= 0) { show('Preço inválido', 'erro'); return }
+    if (isNaN(preco) || preco <= 0) { show('Preço inválido. Use o formato 6,00', 'erro'); return }
 
     setLoading(true)
     const payload = { nome, preco, categoria: form.categoria.trim() || null }
@@ -64,8 +64,18 @@ export default function Produtos() {
       show(res.data.ativo ? 'Produto ativado' : 'Produto inativado')
       carregar()
     } else {
-      show(res.error || 'Erro', 'erro')
+      show(res.error || 'Ocorreu um erro inesperado', 'erro')
     }
+  }
+
+  async function importarExcel() {
+    const res = await window.api['produtos_importarExcel']()
+    if (res.cancelado) return
+    if (!res.ok) { show(res.error || 'Erro ao importar', 'erro'); return }
+    const msg = `${res.importados} produto(s) importado(s)` +
+      (res.erros.length > 0 ? ` · ${res.erros.length} com erro` : '')
+    show(msg, res.erros.length > 0 ? 'aviso' : undefined)
+    carregar()
   }
 
   async function confirmarApagar() {
@@ -92,6 +102,9 @@ export default function Produtos() {
       <div className="page-header">
         <Link to="/" className="btn btn-ghost btn-sm">← Voltar</Link>
         <h1>Produtos</h1>
+        <button className="btn btn-outline btn-sm" onClick={importarExcel}>
+          Importar Excel
+        </button>
       </div>
 
       <div className="card" style={{ maxWidth: 520, marginBottom: 28 }}>
